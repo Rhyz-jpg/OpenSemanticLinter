@@ -36,11 +36,16 @@ export class Linter {
   }
 
   private parseSuggestions(completion: string): Suggestion[] {
+    core.debug(`Raw LLM response:\n---\n${completion}\n---`);
+
     try {
       const suggestions = JSON.parse(completion) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
-      core.warning(`Failed to parse LLM response as JSON: ${completion}`);
+      core.warning(`Failed to parse LLM response as JSON.`);
+      if (error instanceof Error) {
+        core.warning(`Error: ${error.message}`);
+      }
       return [];
     }
   }
