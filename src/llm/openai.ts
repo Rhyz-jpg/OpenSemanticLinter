@@ -8,9 +8,9 @@ export class OpenAiClient implements LlmClient {
     this.client = new OpenAI({ apiKey });
   }
 
-  async getCompletion(prompt: string): Promise<string> {
+  async getCompletion(prompt: string, model?: string): Promise<string> {
     const completion = await this.client.chat.completions.create({
-      model: 'gpt-4',
+      model: model || 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
     });
 

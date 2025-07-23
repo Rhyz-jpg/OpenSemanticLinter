@@ -47,6 +47,7 @@ The Semantic Linter is configured via a YAML file in your repository, by default
 | `config-path`    | Path to the linter configuration file.                 | `.github/linter.yml`   | `true`   |
 | `llm-provider`   | The LLM provider to use (e.g., `openai`, `mock`).      | `openai`               | `true`   |
 | `llm-api-key`    | The API key for the selected LLM provider.             | -                      | `true`   |
+| `llm-model`      | The specific model to use (e.g., `gpt-4`, `gemini-pro`). | -                      | `false`  |
 
 ### Rule Configuration
 
@@ -71,6 +72,7 @@ rules:
 ## Supported LLMs
 
 -   **OpenAI**: `gpt-4`
+-   **Google Gemini**: `gemini-pro`
 -   **Mock**: A mock client for local testing.
 
 The system is designed to be easily extensible. To add a new provider, simply implement the `LlmClient` interface and add it to the `LlmClientFactory`.

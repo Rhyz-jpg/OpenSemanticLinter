@@ -17,6 +17,9 @@ inputs:
   llm-api-key:
     description: 'The API key for the selected LLM provider.'
     required: true
+  llm-model:
+    description: 'The specific model to use (e.g., gpt-4, gemini-pro).'
+    required: false
 
 runs:
   using: 'node20'

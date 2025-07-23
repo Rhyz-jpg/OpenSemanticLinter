@@ -7,7 +7,8 @@ export class Linter {
   constructor(
     private readonly llmClient: LlmClient,
     private readonly config: Config,
-    private readonly diff: string
+    private readonly diff: string,
+    private readonly model?: string
   ) {}
 
   async run(): Promise<Suggestion[]> {
@@ -27,7 +28,7 @@ export class Linter {
     core.info(`Processing rule: ${rule.name}`);
 
     const prompt = this.createPrompt(rule);
-    const completion = await this.llmClient.getCompletion(prompt);
+    const completion = await this.llmClient.getCompletion(prompt, this.model);
 
     core.info(`LLM response for rule "${rule.name}":\n${completion}`);
 

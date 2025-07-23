@@ -11,6 +11,7 @@ export async function run() {
     const configPath = core.getInput('config-path', { required: true });
     const llmProvider = core.getInput('llm-provider', { required: true });
     const llmApiKey = core.getInput('llm-api-key', { required: true });
+    const llmModel = core.getInput('llm-model');
 
     const config = loadConfig(configPath);
     const llmClient = createLlmClient(llmProvider, llmApiKey);
@@ -35,7 +36,12 @@ export async function run() {
       }
     });
 
-    const linter = new Linter(llmClient, config, String(diffResponse.data));
+    const linter = new Linter(
+      llmClient,
+      config,
+      String(diffResponse.data),
+      llmModel
+    );
     const suggestions = await linter.run();
 
     const commenter = new Commenter(octokit, context);
