@@ -37,17 +37,15 @@ export class Linter {
 
   private parseSuggestions(completion: string): Suggestion[] {
     try {
-      const jsonStartIndex = completion.indexOf('[');
-      const jsonEndIndex = completion.lastIndexOf(']');
+      const jsonRegex = /\[[\s\S]*\]/;
+      const match = completion.match(jsonRegex);
 
-      if (jsonStartIndex === -1 || jsonEndIndex === -1) {
+      if (!match) {
         core.warning(`No JSON array found in LLM response: ${completion}`);
         return [];
       }
 
-      const json = completion.substring(jsonStartIndex, jsonEndIndex + 1);
-
-      const suggestions = JSON.parse(json) as Suggestion[];
+      const suggestions = JSON.parse(match[0]) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
       core.warning(`Failed to parse LLM response as JSON: ${completion}`);
