@@ -36,16 +36,8 @@ export class Linter {
   }
 
   private parseSuggestions(completion: string): Suggestion[] {
-    const jsonRegex = /\[[\s\S]*\]/;
-    const match = completion.match(jsonRegex);
-
-    if (!match) {
-      // If no JSON array is found, assume it's a valid response with no suggestions.
-      return [];
-    }
-
     try {
-      const suggestions = JSON.parse(match[0]) as Suggestion[];
+      const suggestions = JSON.parse(completion) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
       core.warning(`Failed to parse LLM response as JSON: ${completion}`);
@@ -65,7 +57,9 @@ export class Linter {
       ${this.diff}
       \`\`\`
 
-      Please analyze the code diff based on the rule and provide a JSON array of suggestions in the following format:
+      Analyze the code diff based on the rule. Your response MUST be a valid JSON array of suggestions and nothing else. Do not include any explanatory text, markdown formatting, or any characters outside of the JSON array. If there are no suggestions, return an empty array [].
+
+      The JSON format is:
       [
         {
           "file": "path/to/file.ext",
