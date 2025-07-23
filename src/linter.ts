@@ -36,15 +36,15 @@ export class Linter {
   }
 
   private parseSuggestions(completion: string): Suggestion[] {
+    const jsonRegex = /\[[\s\S]*\]/;
+    const match = completion.match(jsonRegex);
+
+    if (!match) {
+      // If no JSON array is found, assume it's a valid response with no suggestions.
+      return [];
+    }
+
     try {
-      const jsonRegex = /\[[\s\S]*\]/;
-      const match = completion.match(jsonRegex);
-
-      if (!match) {
-        core.warning(`No JSON array found in LLM response: ${completion}`);
-        return [];
-      }
-
       const suggestions = JSON.parse(match[0]) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
