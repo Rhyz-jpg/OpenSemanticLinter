@@ -1,0 +1,23 @@
+name: 'Semantic Linter'
+description: 'Lints pull requests using an LLM to enforce semantic rules.'
+author: 'Roo'
+
+inputs:
+  repo-token:
+    description: 'The GITHUB_TOKEN secret.'
+    required: true
+  config-path:
+    description: 'Path to the linter configuration file.'
+    required: true
+    default: '.github/linter.yml'
+  llm-provider:
+    description: 'The LLM provider to use (e.g., openai, anthropic).'
+    required: true
+    default: 'openai'
+  llm-api-key:
+    description: 'The API key for the selected LLM provider.'
+    required: true
+
+runs:
+  using: 'node20'
+  main: 'dist/main.js'

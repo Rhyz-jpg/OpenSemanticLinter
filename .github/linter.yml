@@ -1,0 +1,18 @@
+# Semantic Linter Configuration
+
+# A list of rules to enforce in pull requests.
+rules:
+  - name: "Enforce descriptive variable names"
+    description: "Variable names should be descriptive and avoid single-letter names, except for loop counters."
+    language: "javascript"
+    prompt: "Review the following code and identify any variable names that are not descriptive. Suggest better names."
+
+  - name: "Check for missing error handling"
+    description: "Ensure that all fallible operations are wrapped in appropriate error handling blocks (e.g., try-catch)."
+    language: "typescript"
+    prompt: "Analyze the code for any operations that could fail (e.g., API calls, file I/O) and are not handled with try-catch or .catch()."
+
+  - name: "Discourage the use of force unwrapping"
+    description: "Avoid using force unwrapping (!) in Swift. Prefer optional binding or nil-coalescing."
+    language: "swift"
+    prompt: "Identify any instances of force unwrapping in the Swift code and suggest safer alternatives."
