@@ -37,7 +37,12 @@ export class Linter {
 
   private parseSuggestions(completion: string): Suggestion[] {
     try {
-      const suggestions = JSON.parse(completion) as Suggestion[];
+      const jsonRegex = /```json\n([\s\S]*?)\n```/;
+      const match = completion.match(jsonRegex);
+
+      const json = match ? match[1] : completion;
+
+      const suggestions = JSON.parse(json) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
       core.warning(`Failed to parse LLM response as JSON: ${completion}`);
