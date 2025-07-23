@@ -33,6 +33,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           llm-provider: 'openai' # or another supported provider
           llm-api-key: ${{ secrets.OPENAI_API_KEY }}
+          llm-model: 'gemini-2.5-pro' # optional, defaults to provider's default
 ```
 
 ## Configuration
