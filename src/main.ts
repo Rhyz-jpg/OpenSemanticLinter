@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import * as github from './github';
 import { loadConfig } from './config';
 import { createLlmClient } from './llm/factory';
+import { withRetry } from './llm/retry';
 import { Linter } from './linter';
 import { Commenter } from './commenter';
 
@@ -12,9 +13,15 @@ export async function run() {
     const llmProvider = core.getInput('llm-provider', { required: true });
     const llmApiKey = core.getInput('llm-api-key', { required: true });
     const llmModel = core.getInput('llm-model');
+    const maxRetries = parseInt(core.getInput('max-retries'), 10);
+    const retryDelay = parseInt(core.getInput('retry-delay'), 10);
 
     const config = loadConfig(configPath);
-    const llmClient = createLlmClient(llmProvider, llmApiKey);
+    const llmClient = withRetry(
+      createLlmClient(llmProvider, llmApiKey),
+      maxRetries,
+      retryDelay
+    );
 
     const octokit = github.getOctokit(token);
     const context = github.context;

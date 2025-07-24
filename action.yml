@@ -20,6 +20,14 @@ inputs:
   llm-model:
     description: 'The specific model to use (e.g., gpt-4, gemini-pro).'
     required: false
+  max-retries:
+    description: 'The maximum number of retries for failed API calls.'
+    required: false
+    default: '3'
+  retry-delay:
+    description: 'The delay in milliseconds between retries.'
+    required: false
+    default: '1000'
 
 runs:
   using: 'node20'

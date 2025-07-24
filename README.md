@@ -49,6 +49,8 @@ The Semantic Linter is configured via a YAML file in your repository, by default
 | `llm-provider`   | The LLM provider to use (e.g., `openai`, `mock`).      | `openai`               | `true`   |
 | `llm-api-key`    | The API key for the selected LLM provider.             | -                      | `true`   |
 | `llm-model`      | The specific model to use (e.g., `gpt-4`, `gemini-pro`). | -                      | `false`  |
+| `max-retries`    | The maximum number of retries for failed API calls.    | `3`                    | `false`  |
+| `retry-delay`    | The delay in milliseconds between retries.             | `1000`                 | `false`  |
 
 ### Rule Configuration
 
