@@ -36,37 +36,45 @@ export class Linter {
   }
 
   private parseSuggestions(completion: string): Suggestion[] {
-    core.debug(`Raw LLM response:\n---\n${completion}\n---`);
+    core.debug(`Attempting to parse LLM response:\n---\n${completion}\n---`);
 
     let jsonString = '';
 
+    // 1. Try to extract from a ```json markdown block
     const jsonBlockRegex = /```json\n([\s\S]*?)\n```/;
     const blockMatch = completion.match(jsonBlockRegex);
 
     if (blockMatch && blockMatch[1]) {
       jsonString = blockMatch[1];
-      core.debug(`Extracted JSON from markdown block:\n---\n${jsonString}\n---`);
+      core.debug(`Strategy 1: Extracted JSON from markdown block.`);
     } else {
-      const arrayRegex = /\[[\s\S]*\]/;
-      const arrayMatch = completion.match(arrayRegex);
-      if (arrayMatch && arrayMatch[0]) {
-        jsonString = arrayMatch[0];
-        core.debug(`Extracted raw JSON array:\n---\n${jsonString}\n---`);
+      core.debug('Strategy 1: No markdown block found.');
+      // 2. Fallback: Find the first '[' and last ']'
+      const firstBracket = completion.indexOf('[');
+      const lastBracket = completion.lastIndexOf(']');
+
+      if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+        jsonString = completion.substring(firstBracket, lastBracket + 1);
+        core.debug(`Strategy 2: Extracted content between first '[' and last ']'.`);
+      } else {
+        core.debug('Strategy 2: No JSON array found.');
       }
     }
 
     if (!jsonString) {
-      core.info('No suggestions found in LLM response.');
+      core.info('No parsable JSON found in LLM response.');
       return [];
     }
+
+    core.debug(`Final JSON string to be parsed:\n---\n${jsonString}\n---`);
 
     try {
       const suggestions = JSON.parse(jsonString) as Suggestion[];
       return suggestions.filter(s => s.file && s.line && s.message);
     } catch (error) {
-      core.warning(`Failed to parse extracted JSON. Raw response was: ${completion}`);
+      core.warning(`Failed to parse extracted JSON.`);
       if (error instanceof Error) {
-        core.warning(`Error: ${error.message}`);
+        core.warning(`Parse Error: ${error.message}`);
       }
       return [];
     }
