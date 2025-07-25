@@ -82,6 +82,9 @@ export class Linter {
 
   private createPrompt(rule: Rule): string {
     return `
+      You are an expert software developer and code reviewer.
+      Your task is to analyze the following code diff and provide suggestions based on the given rule.
+
       Rule: ${rule.name}
       Description: ${rule.description}
       Language: ${rule.language}
