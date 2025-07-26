@@ -1,0 +1,75 @@
+# Detailed Development Log: OpenSemanticLinter
+
+This document provides a comprehensive, detailed explanation of the development process for the OpenSemanticLinter GitHub Action.
+
+## Phase 1: Planning and Architecture
+
+The project began with a clear goal: to create a GitHub Action that could lint pull requests using semantic, human-readable rules, with an LLM as the analysis engine.
+
+The first major decision was the choice of programming language. I selected TypeScript because of its excellent integration with the GitHub Actions ecosystem, primarily through the `@actions/toolkit` library. This library provides a robust set of tools for interacting with the GitHub API, which is essential for fetching pull request data and posting comments.
+
+With the language chosen, I moved on to the high-level architecture. I designed a simple, modular system that would be easy to understand, maintain, and extend. The core components were identified as:
+- A main action entry point to handle the workflow interaction.
+- A configuration loader to parse the user-defined linting rules.
+- An LLM client module to handle communication with the LLM API.
+- A linter module to orchestrate the analysis.
+- A commenter module to post the results back to the pull request.
+
+This architecture was visualized using a Mermaid diagram to ensure a clear understanding of the data flow.
+
+## Phase 2: Core Action Setup & Configuration
+
+With the plan in place, I began the implementation by scaffolding the project. This involved creating the standard configuration files for a TypeScript project:
+- `package.json`: To define the project's dependencies and scripts.
+- `tsconfig.json`: To configure the TypeScript compiler.
+- `jest.config.js`: To configure the Jest testing framework.
+
+Next, I created the `action.yml` file, which is the heart of any GitHub Action. This file defines the action's metadata, inputs, and outputs. I defined the initial inputs as `repo-token` and `config-path`, which are essential for the action to function.
+
+The final step in this phase was to implement the rule ingestion system. I designed a simple, human-readable YAML format for the linting rules and implemented the parsing logic in `src/config.ts` using the `js-yaml` library.
+
+## Phase 3: LLM Integration
+
+This phase was focused on building a flexible and extensible system for interacting with different LLM providers.
+
+The first step was to create a provider-agnostic `LlmClient` interface in `src/llm/client.ts`. This interface defines a single method, `getCompletion`, which ensures that every provider we add will adhere to a consistent contract.
+
+With the interface in place, I created a factory function in `src/llm/factory.ts`. This function is responsible for creating the appropriate LLM client based on the user's selection, which keeps the client creation logic centralized and easy to manage.
+
+I then implemented the first LLM provider, OpenAI, by creating an `OpenAiClient` class in `src/llm/openai.ts`. This class integrates with the `openai` package and handles all communication with the OpenAI API.
+
+Later, I added support for Google Gemini models by implementing a `GeminiClient` in `src/llm/gemini.ts` using the `@google/generative-ai` package.
+
+To allow users to specify which model they want to use, I added an `llm-model` input to the `action.yml` file and updated the client implementations to accept this parameter.
+
+## Phase 4: Code Analysis and Suggestion Posting
+
+This phase was focused on implementing the core logic of the linter.
+
+I started by creating a `Linter` class in `src/linter.ts`. This class is responsible for orchestrating the analysis, which involves creating prompts, sending them to the LLM, and parsing the response.
+
+The `createPrompt` method was carefully crafted to provide the LLM with all the necessary context, including the rule, the code diff, and the expected output format.
+
+The `parseSuggestions` method was a significant challenge, as the LLM's response format proved to be unpredictable. I iteratively improved this method to handle various response formats, including markdown code blocks, conversational preambles, and raw JSON arrays. The final implementation is a robust, multi-stage parsing strategy that can handle all the variations we've encountered.
+
+With the suggestions parsed, the final step was to post them as comments on the pull request. I created a `Commenter` class in `src/commenter.ts` to encapsulate this logic. This class uses the `octokit` client to create review comments on the relevant lines of the pull request.
+
+## Phase 5: Refinement, Testing, and Debugging
+
+This phase was focused on improving the project's quality, reliability, and developer experience.
+
+I started by refactoring the file structure to be more organized and scalable. This involved moving the main entry point to `src/main.ts`, creating a `scripts` directory for the local test runner, and adding a `src/github.ts` wrapper for better mocking.
+
+Next, I set up a robust local testing environment using `ts-node` and a mock LLM client. This allows for rapid development and verification of changes without needing to commit to a repository.
+
+I also established a unit testing framework with Jest and added an initial test for the `Linter` class to ensure the quality and reliability of the code.
+
+The `README.md` was created to provide comprehensive documentation on the action's features, usage, configuration options, and local testing procedures.
+
+Throughout the development process, I encountered and fixed several bugs and issues, including:
+- **JSON Parsing**: This was the most significant challenge, and it required several iterations to create a robust parsing strategy.
+- **Prompt Engineering**: The prompt was refined to be more explicit and to include role-playing and context, which significantly improved the quality of the LLM's suggestions.
+- **Retry Logic**: A configurable retry mechanism was implemented to handle transient network errors when communicating with the LLM API.
+- **GitHub Actions Workflow Issues**: I diagnosed and fixed several common GitHub Actions issues, including ensuring the `dist` directory is committed to the repository and correcting the entry point in `action.yml`.
+
+Finally, I created this detailed development log to provide a comprehensive overview of the entire process.
