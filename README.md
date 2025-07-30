@@ -2,6 +2,8 @@
 
 A flexible and powerful GitHub Action that uses Large Language Models (LLMs) to lint your pull requests based on a set of human-readable, semantic rules.
 
+[![Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-yellow.svg)]()
+
 ## Features
 
 -   **Semantic Linting**: Go beyond traditional static analysis by defining rules in natural language.
